@@ -1,0 +1,56 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "list_workout_tasks_query",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "ワークアウトタスクの進捗一覧を表示して"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Google Antigravity、Agent CLI、M365 Copilotのワークアウトタスク進捗状況を表示します。"}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "antigravity_skill_creation_query",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Antigravity SkillのYAML定義方法を教えて"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Antigravity SkillはSKILL.mdファイル内にfrontmatter YAMLメタデータ（name, description）を定義します。"}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "badge_image_generation_query",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Agent CLIマスターの達成バッジ画像を生成して"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Agent CLIマスターの3Dゴールド＆ネオングロー達成バッジ画像を生成し、Cloud Storageへアップロードしました。"}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "video_teaser_generation_query",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Google Antigravityマスターのショート動画ティーザーを生成して"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Google Omniモデル（gemini-omni-flash-preview）を使用してGoogle Antigravityのティーザー動画を生成し、Cloud Storageへアップロードしました。"}]
+        }
+      }
+    }
+  ]
+}

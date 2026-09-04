@@ -1,0 +1,26 @@
+[
+  {
+    "id": "task-001",
+    "title": "Google Antigravity スキル定義の作成",
+    "category": "Antigravity",
+    "status": "COMPLETED",
+    "difficulty": "Intermediate",
+    "description": "SKILL.md 内に YAML frontmatter メタデータと詳細命令を記述する。"
+  },
+  {
+    "id": "task-002",
+    "title": "Agent CLI による Reasoning Engine デプロイ",
+    "category": "Agent CLI",
+    "status": "IN_PROGRESS",
+    "difficulty": "Advanced",
+    "description": "agents-cli deploy コマンドを使用して Vertex AI Reasoning Engine へエージェントをデプロイする。"
+  },
+  {
+    "id": "task-003",
+    "title": "M365 Copilot エージェント連携機能の実装",
+    "category": "M365 Copilot",
+    "status": "NOT_STARTED",
+    "difficulty": "Beginner",
+    "description": "Microsoft 365 Copilot との A2A プロトコル連携を検証・構築する。"
+  }
+]
