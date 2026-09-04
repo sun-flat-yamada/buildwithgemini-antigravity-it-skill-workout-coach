@@ -1,6 +1,6 @@
 # 🏛️ System Prompt, Harness Design, & Setup Architecture Guide
 
-This document provides a comprehensive technical breakdown of the system prompts, environment setup, lab operations harness design, VM initialization, and reproducible real datasets for the **IT Skill Workout Coach** agent application.
+This document provides a comprehensive technical breakdown of the system prompts, environment setup, lab operations harness design, VM initialization, reproducible real datasets, and the **Automated Demo Video Recording Realization Mechanism** for the **IT Skill Workout Coach** agent application.
 
 ---
 
@@ -106,14 +106,86 @@ The lab operations harness connects the browser UI, local development environmen
 - **Firestore Harness**: Manages IT skill task documents under collection `workout_tasks`.
 - **GCS Asset Harness**: Uploads binary byte streams directly to public GCS bucket `antigravity-it-workout-coach-assets-4f265f3b` and returns public HTTPS URLs.
 
-### 5. Automated Video & Audio Recording Harness
-- **Headless Playwright (`record_demo.py`)**: Automates browser user interactions on `http://localhost:8080`.
-- **SciPy/NumPy Audio Synthesizer (`generate_lofi_music.py`)**: Programmatically generates an 84 BPM Lo-Fi Hip Hop track (Cmaj7 - Am7 - Dm7 - G7) with vinyl crackle.
-- **FFmpeg Processing Pipeline**: Multiplexes audio/video streams, converts WebM to MP4, and generates palette-optimized looping GIFs.
+---
+
+## 5. 🎬 Automated Demo Video Realization Mechanism (Detailed Architecture)
+
+The automated demo video recording and presentation pipeline fulfills the core prompt requirement:
+
+> *"Record a demo video of my agent. Show it doing the thing my app does best, then ask a second, richer prompt that shows off a tool call, a database lookup, or a generated image."*
+
+This pipeline operates deterministically through 5 systematic phases:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1. Playwright Automation Script (scratch/record_demo.py)                                │
+│    ├── Phase A: Launch Chromium with record_video_dir (1280x720 Viewport)                │
+│    ├── Phase B: Prompt 1 (Firestore Lookup): "Antigravityカテゴリのタスク一覧"          │
+│    │            └── Wait for DOM .a2card render (list_workout_tasks tool call)          │
+│    └── Phase C: Prompt 2 (Multimodal Badge Gen): "Antigravityアチーブメントバッジ生成"   │
+│                 └── Wait for tool call (gemini-3.1-flash-lite-image -> GCS -> <img>)   │
+└──────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                           │ (Raw WebM Video File)
+                                           ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ 2. Pure Python Audio Synthesizer Engine (scratch/generate_lofi_music.py)                 │
+│    ├── Harmonic Cmaj7-Am7-Dm7-G7 chord progression via warm sine oscillators & RC filter │
+│    ├── 84 BPM Lo-Fi drum pattern (Exponential kick, noise-burst snare, hi-hat)          │
+│    └── Vinyl crackle & Poisson impulse noise layer -> Outputs lofi_music.wav            │
+└──────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                           │ (20s Stereo WAV Audio)
+                                           ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ 3. FFmpeg Video Transcoding & Multiplexing Engine                                       │
+│    ├── Multiplex Audio + Video: demo_lofi.mp4 (H.264/AAC) & demo_lofi.webm (VP9/Opus)    │
+│    └── Two-Pass Palette GIF Generator: palettegen/paletteuse @ 15 FPS -> demo.gif       │
+└──────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                           │ (Inline Optimized Asset)
+                                           ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ 4. Inline Presentation Layer                                                            │
+│    └── Embedded relative link ![Demo](./demo.gif) in README.md top showcase             │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Phase 1: Headless Browser & Scenario Orchestration (`scratch/record_demo.py`)
+- Uses `playwright.async_api` to launch a headless Chromium browser instance with `record_video_dir` enabled at 1280x720 HD resolution.
+- Navigates to `http://127.0.0.1:8080` (the custom FastAPI chat frontend).
+
+### Phase 2: Two-Stage Prompt Execution Sequence
+1. **Stage 1 (Core Application Functionality & Database Lookup)**:
+   - Types: `"Antigravityカテゴリのワークアウトタスク一覧を表示して"`
+   - Trigger: Calls `list_workout_tasks` tool on Firestore database.
+   - UI Render: Receives A2UI JSON payload and renders a styled `.a2card` component with task titles, status badges, and estimated duration.
+   - Pause: 6-second hold for clear visual inspection.
+2. **Stage 2 (Richer Multimodal Tool Call & Image Generation)**:
+   - Types: `"Antigravityマスター達成のアチーブメントバッジ画像を生成して"`
+   - Trigger: Calls `generate_workout_badge_image` tool, invoking `gemini-3.1-flash-lite-image` via Vertex AI.
+   - Storage & UI Render: Uploads image bytes to public GCS bucket (`antigravity-it-workout-coach-assets-4f265f3b`) and renders an inline `<img>` within the chat bubble.
+   - Pause: 8-second hold for visual badge showcase.
+
+### Phase 3: Pure Python 84 BPM Lo-Fi Audio Synthesizer Engine (`scratch/generate_lofi_music.py`)
+To avoid third-party music API dependencies and recurring audio license costs, an 84 BPM Lo-Fi Hip Hop audio track was programmatically synthesized using `numpy` and `scipy.io.wavfile`:
+- **Chord Progression**: Cmaj7 - Am7 - Dm7 - G7 synthesized with multi-frequency sine oscillators and low-pass RC filter smoothing.
+- **Percussion Synthesizer**:
+  - Kick: Exponential sine frequency sweep (120 Hz → 40 Hz).
+  - Snare: Filtered white noise with exponential decay envelope.
+  - Hi-Hat: High-pass filtered noise bursts placed on eighth-note sub-beats.
+- **Analog Vinyl Effect**: Layered Poisson impulse crackle and pink noise.
+
+### Phase 4: FFmpeg Transcoding & Two-Pass Palette GIF Optimization
+- **Multiplexing**: Merges recorded video stream and WAV audio using FFmpeg (`-c:v libx264 -c:a aac` for MP4, `-c:v libvpx-vp9 -c:a libopus` for WebM).
+- **Two-Pass GIF Optimization**:
+  - Pass 1: Generates an optimal 256-color palette (`palettegen`).
+  - Pass 2: Applies palette mapping with Bayer dithering (`paletteuse`) at 15 FPS and 800px width.
+  - Result: Produces a lightweight, smooth, high-fidelity looping `./demo.gif` (< 3 MB).
+
+### Phase 5: Inline README Integration
+- Linked directly near the top of `README.md` using relative path `![Demo](./demo.gif)` for instant, inline looping playback on GitHub.
 
 ---
 
-## 5. 📦 Reproducible Real Datasets
+## 6. 📦 Reproducible Real Datasets
 
 ### 1. Firestore Tasks Seed Dataset (`docs/seed_data/firestore_tasks.json`)
 Contains the initial state of IT workout tasks used by the agent during database lookups.
