@@ -1,91 +1,88 @@
 # 📊 Operating Cost Analysis & Budget Guide
 
-This document provides an exhaustive technical and financial cost breakdown for operating the **IT Skill Workout Coach** agent application across Google Cloud Platform (GCP) and associated services.
+This document provides an exhaustive technical and financial cost breakdown for operating the **IT Skill Workout Coach** agent application across Google Cloud Platform (GCP) and associated services, including itemized monthly calculations and **Grand Total Estimated Monthly Costs**.
 
 ---
 
-## 1. 🏗️ Service-by-Service Pricing Breakdown
+## 1. 🏗️ Service & Unit Price Catalog
 
-### 1. Vertex AI Generative Models (LLM Inference & Multimodal)
+| Category | Service / Model | Role / Purpose | Unit Rate (USD) | Monthly GCP Free Tier |
+| --- | --- | --- | --- | --- |
+| **LLM Inference** | **`gemini-3.6-flash`** (Input) | Prompts, context, tool output | **$0.075** / 1M tokens | - |
+| **LLM Inference** | **`gemini-3.6-flash`** (Output) | Agent reasoning & A2UI cards | **$0.30** / 1M tokens | - |
+| **Image Gen** | **`gemini-3.1-flash-lite-image`** | 3D achievement badges | **$0.0005** / image | - |
+| **Video Gen** | **`gemini-omni-flash-preview`** | 3D workout teaser videos | **$0.05** / video | - |
+| **Agent Base** | **Vertex AI Reasoning Engine** | Agent Runtime hosting | **$0.00** base runtime fee | - |
+| **Memory** | **Vertex AI Memory Bank** | Asynchronous memory extraction | **$0.075** / 1M tokens | - |
+| **RAG Search** | **Vertex AI RAG Engine** | Gutenberg & technical docs | **$0.10** / GB / mo (storage) | 1,000 queries/mo free |
+| **Database** | **Cloud Firestore (Native)** | Task CRUD operations | Reads: **$0.06** / 100k<br>Writes: **$0.18** / 100k | 1 GiB free / 50k reads/day |
+| **Storage** | **Cloud Storage (GCS Standard)** | Public badge & video hosting | **$0.02** / GB / mo | 5 GB free / 100 GB egress |
+| **Frontend** | **Cloud Run (FastAPI Proxy)** | Browser-to-Agent A2A Proxy | vCPU: **$0.00002400** / sec<br>req: **$0.40** / 1M reqs | 180k vCPU-sec / 2M reqs |
 
-| Component / Model | Operation | Unit Cost Rate (USD) | Usage Pattern |
+---
+
+## 2. 💰 Monthly Cost Calculations & Grand Total Estimates
+
+### 🟢 1. Small Scale / Individual & Workshop Use (1,000 Conversation Turns / Month)
+
+*Assumption: 1,000 turns/mo, 20 badge images/mo, 5 video teasers/mo, 100 memory extraction sessions/mo*
+
+| Service Name | Estimated Usage | Formula | Estimated Monthly Cost (USD) |
 | --- | --- | --- | --- |
-| **`gemini-3.6-flash`** | Text & Function Calling (Input) | **$0.075** / 1M tokens | Prompts, conversation history, tool outputs (~4,000 tokens/turn) |
-| **`gemini-3.6-flash`** | Text & Function Calling (Output) | **$0.30** / 1M tokens | Agent reasoning & A2UI card payloads (~500 tokens/turn) |
-| **`gemini-3.1-flash-lite-image`** | 3D Achievement Badge Generation | **$0.0005** / image | Invoked on `generate_workout_badge_image` |
-| **`gemini-omni-flash-preview`** | 3D Teaser Video Generation | **$0.05** / video | Invoked on `generate_workout_teaser_video` |
+| **Gemini 3.6 Flash (Input)** | 4.0M tokens | 4.0M × $0.075 | $0.30 |
+| **Gemini 3.6 Flash (Output)** | 0.5M tokens | 0.5M × $0.30 | $0.15 |
+| **Gemini 3.1 Flash Lite Image** | 20 images | 20 × $0.0005 | $0.01 |
+| **Gemini Omni Flash (Video)** | 5 videos | 5 × $0.05 | $0.25 |
+| **Vertex AI Memory Bank** | 0.2M tokens | 0.2M × $0.075 | $0.015 |
+| **Vertex AI RAG Engine** | 0.1 GB | 0.1GB × $0.10 | $0.01 |
+| **Cloud Firestore** | < 5,000 ops | Covered by Free Tier ($0.00) | $0.00 |
+| **Cloud Storage** | < 1 GB | 1GB × $0.02 | $0.02 |
+| **Cloud Run** | < 1,000 reqs | Covered by Free Tier ($0.00) | $0.00 |
+| **【GRAND TOTAL ESTIMATED COST】** | - | - | **~$0.755 / month** |
 
 ---
 
-### 2. Vertex AI Agent Platform & Memory Services
+### 🟡 2. Medium Scale / Team & Department Use (50,000 Conversation Turns / Month)
 
-| Service | Operation | Unit Cost Rate (USD) | Description |
+*Assumption: 50,000 turns/mo, 1,000 badge images/mo, 200 video teasers/mo, 5,000 memory extraction sessions/mo*
+
+| Service Name | Estimated Usage | Formula | Estimated Monthly Cost (USD) |
 | --- | --- | --- | --- |
-| **Vertex AI Reasoning Engine** | Managed Agent Runtime | **$0.00** base runtime fee | Charged based on underlying LLM inference API calls |
-| **Vertex AI Memory Bank** | Memory Extraction Callback | **$0.075** / 1M tokens | Asynchronous extraction of user preferences & workout history |
+| **Gemini 3.6 Flash (Input)** | 200M tokens | 200M × $0.075 | $15.00 |
+| **Gemini 3.6 Flash (Output)** | 25M tokens | 25M × $0.30 | $7.50 |
+| **Gemini 3.1 Flash Lite Image** | 1,000 images | 1,000 × $0.0005 | $0.50 |
+| **Gemini Omni Flash (Video)** | 200 videos | 200 × $0.05 | $10.00 |
+| **Vertex AI Memory Bank** | 10M tokens | 10M × $0.075 | $0.75 |
+| **Vertex AI RAG Engine** | 0.5 GB | 0.5GB × $0.10 | $0.05 |
+| **Cloud Firestore** | 100k reads / 20k writes | ($0.06) + ($0.036) | $0.10 |
+| **Cloud Storage** | 5 GB | 5GB × $0.02 | $0.10 |
+| **Cloud Run** | 50,000 reqs | Covered by Free Tier ($0.00) | $0.00 |
+| **【GRAND TOTAL ESTIMATED COST】** | - | - | **~$34.00 / month** |
 
 ---
 
-### 3. Vertex AI RAG Engine & Embedding Search
+### 🔴 3. Enterprise Scale (500,000 Conversation Turns / Month)
 
-| Component | Operation | Unit Cost Rate (USD) | Description |
+*Assumption: 500,000 turns/mo, 10,000 badge images/mo, 2,000 video teasers/mo, 50,000 memory extraction sessions/mo*
+
+| Service Name | Estimated Usage | Formula | Estimated Monthly Cost (USD) |
 | --- | --- | --- | --- |
-| **`text-embedding-005`** | Document Vector Embedding | **$0.025** / 1M tokens | One-time ingestion for Gutenberg & Antigravity docs |
-| **RAG Managed DB (Serverless)** | Storage | **$0.10** / GB / month | Vector index storage for literature & tech docs |
-| **RAG Retrieval Query** | Vector Similarity Search | **$0.00** / query | Search compute included in serverless mode |
+| **Gemini 3.6 Flash (Input)** | 2,000M tokens | 2,000M × $0.075 | $150.00 |
+| **Gemini 3.6 Flash (Output)** | 250M tokens | 250M × $0.30 | $75.00 |
+| **Gemini 3.1 Flash Lite Image** | 10,000 images | 10,000 × $0.0005 | $5.00 |
+| **Gemini Omni Flash (Video)** | 2,000 videos | 2,000 × $0.05 | $100.00 |
+| **Vertex AI Memory Bank** | 100M tokens | 100M × $0.075 | $7.50 |
+| **Vertex AI RAG Engine** | 2.0 GB | 2.0GB × $0.10 | $0.20 |
+| **Cloud Firestore** | 1M reads / 200k writes | ($0.60) + ($0.36) | $0.96 |
+| **Cloud Storage** | 50 GB | 50GB × $0.02 | $1.00 |
+| **Cloud Run** | 500k reqs | Covered by Free Tier ($0.00) | $0.00 |
+| **Internet Egress** | ~20 GB | Covered by Free Tier (100 GB/mo) | $0.00 |
+| **【GRAND TOTAL ESTIMATED COST】** | - | - | **~$339.66 / month** |
 
 ---
 
-### 4. Cloud Database & Asset Storage
+## 3. 🛡️ Budget Governance Best Practices
 
-| Cloud Service | Resource | Unit Cost Rate (USD) | Notes |
-| --- | --- | --- | --- |
-| **Cloud Firestore (Native Mode)** | Document Reads | **$0.06** / 100k reads | `list_workout_tasks` & query lookups |
-| **Cloud Firestore (Native Mode)** | Document Writes | **$0.18** / 100k writes | `add_workout_task` & `update_workout_task_status` |
-| **Cloud Firestore (Native Mode)** | Document Storage | **$0.18** / GB / month | First 1 GiB free per project |
-| **Cloud Storage (GCS Standard)** | Asset Bucket Storage | **$0.02** / GB / month | Badge images (`.jpg`/`.png`) and video teasers (`.mp4`) |
-| **Cloud Storage (GCS Standard)** | Class A Operations (Upload) | **$0.05** / 10k ops | Uploading generated image/video byte streams |
-| **Cloud Storage (GCS Standard)** | Class B Operations (Download) | **$0.004** / 10k ops | Serving public asset URLs to browser clients |
-
----
-
-### 5. Serverless Compute & Network Egress
-
-| Service | Metric | Free Tier Allowance | Pay-As-You-Go Rate |
-| --- | --- | --- | --- |
-| **Cloud Run (FastAPI Proxy)** | vCPU Second | 180,000 vCPU-sec / month | **$0.00002400** / vCPU-sec |
-| **Cloud Run (FastAPI Proxy)** | Memory Second | 360,000 GiB-sec / month | **$0.00000250** / GiB-sec |
-| **Cloud Run (FastAPI Proxy)** | Requests | 2M requests / month | **$0.40** / 1M requests |
-| **Internet Egress** | Data Transfer | 100 GB / month | **$0.08 – $0.12** / GB |
-
----
-
-## 2. 📈 Operational Cost Scenarios & Projections
-
-Below are 3 realistic operational scale models based on monthly user activity.
-
-### Scenario A: Personal / Workshop Trial Scale
-- **Monthly Turn Volume**: 1,000 user turns
-- **Badge Generations**: 20 images
-- **Video Teaser Generations**: 5 videos
-- **Estimated Monthly Cost**: **~$0.45 – $1.20 / month** (Covered almost entirely by GCP Free Tier)
-
-### Scenario B: Team / Departmental Scale
-- **Monthly Turn Volume**: 50,000 user turns
-- **Badge Generations**: 1,000 images
-- **Video Teaser Generations**: 200 videos
-- **Estimated Monthly Cost**: **~$18.50 – $32.00 / month**
-
-### Scenario C: Enterprise Scale
-- **Monthly Turn Volume**: 500,000 user turns
-- **Badge Generations**: 10,000 images
-- **Video Teaser Generations**: 2,000 videos
-- **Estimated Monthly Cost**: **~$280.00 – $450.00 / month**
-
----
-
-## 3. 🛡️ Cost Control & Budget Governance Guidelines
-
-1. **GCP Budget Alerts**: Set up a GCP Budget Alert in the Console at $10.00 / $50.00 / $100.00 thresholds with email notifications.
-2. **GCS Lifecycle Rules**: Configure a 30-day auto-deletion lifecycle rule on `antigravity-it-workout-coach-assets-4f265f3b` for temporary video teasers.
-3. **Cloud Run Concurrency**: Set `concurrency = 80` and `min_instances = 0` to prevent idle container billing.
+1. **Set GCP Budget Alerts**: Configure GCP Billing alerts at $10.00 / $50.00 / $100.00 thresholds.
+2. **GCS Lifecycle Policy**: Set a 30-day auto-deletion policy on `antigravity-it-workout-coach-assets-4f265f3b` to clean up old generated videos.
+3. **Cloud Run Cold Scale**: Keep `min_instances = 0` to maintain zero billing when no requests arrive.
