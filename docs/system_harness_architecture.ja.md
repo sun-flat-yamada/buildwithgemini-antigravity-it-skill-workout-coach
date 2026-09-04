@@ -1,10 +1,39 @@
 # 🏛️ システムプロンプト・ハーネス設計・セットアップアーキテクチャガイド
 
-本ドキュメントは、**IT Skill Workout Coach** エージェントアプリケーションにおけるシステムプロンプト、環境セットアップ、ラボ操作ハーネス設計、および復元可能な実データセットについての完全な技術解説を提供します。
+本ドキュメントは、**IT Skill Workout Coach** エージェントアプリケーションにおける Antigravity 動作環境のシステムプロンプト、VM の初期セットアップ情報、環境設定、ラボ操作ハーネス設計、および復元可能な実データセットについての完全な技術解説を提供します。
 
 ---
 
-## 1. 🤖 システムプロンプト & 指示文構造
+## 1. ⚙️ Antigravity Lab 設定・プロンプト一覧
+
+### 1. 認証・環境設定ファイル
+
+- **`lab.env`** (`/config/automata/lab.env`): Qwiklabs 受講者アカウント情報 (`AG_EMAIL`, `AG_PASSWORD`) および GCP プロジェクト ID (`AG_PROJECT_ID`) を格納。
+- **アプリ用 `.env`** (`/config/Desktop/BuildWithGemini/antigravity-it-skill-workout-coach/.env`): Vertex AI および GCP プロジェクト設定:
+  ```env
+  GOOGLE_GENAI_USE_VERTEXAI=true
+  GOOGLE_CLOUD_PROJECT=qwiklabs-gcp-03-4f265f3b8af7
+  GOOGLE_CLOUD_LOCATION=global
+  MEMORY_BANK_ID=7139003105068187648
+  ```
+
+### 2. システムプロンプト・要件定義
+
+- **`agent.py (instruction)`**: IT Skill Workout Coach エージェントのシステムプロンプトおよび A2UI カード構造化出力の指示文。
+- **`project_brief.md`** (`/config/Desktop/BuildWithGemini/project_brief.md`): 演習「Antigravity IT Skill Workout Coach」の要件定義書。基本機能 (memory, tools, eval, deploy, frontend) とストレッチメニュー (A2UI カタログ・テーブル, 画像生成バッジ/図解, Code Sandbox グラフ化) を定義。
+- **`GEMINI.md`** (`/config/Desktop/BuildWithGemini/antigravity-it-skill-workout-coach/GEMINI.md`): AI エージェント向け開発ガイドライン、6 段階の開発フェーズ、および動作制約ルール (既存コードの保存、モデル非変更ルールなど)。
+- **`SKILL.md (troubleshoot-lab-setup)`** (`/config/Desktop/BuildWithGemini/.agents/skills/troubleshoot-lab-setup/SKILL.md`): 環境事前チェック、GCP ログイン状態・IAM 権限 (`roles/aiplatform.user`)・API 有効化状態の診断およびエラー修復用プロンプト。
+
+### 3. 自動化スクリプト・インターセプター・フラグ
+
+- **`automata/bin/`**:
+  - `ag_autologin.py`: GCP および Antigravity CLI への自動ログイン処理スクリプト。
+  - ブラウザ起動インターセプター (`xdg-open`, `shim`): リモートデスクトップ環境内でのブラウザ起動呼び出しをフック・制御。
+- **`.antigravity-lab-setup-complete`** (`/config/.antigravity-lab-setup-complete`): ラボ環境のセットアップ初期化が正常完了したことを示すマーカーファイル。
+
+---
+
+## 2. 🤖 エージェントシステムプロンプト構造
 
 エージェントのペルソナ、実行制約、および UI 出力フォーマットは、[`app/agent.py`](../app/agent.py) 内で定義された多層構造のシステムプロンプトによって制御されています。
 
@@ -26,7 +55,7 @@
 
 ---
 
-## 2. ⚙️ 環境セットアップ & インフラ構成
+## 3. ⚙️ インフラ & IAM 権限構成
 
 ### プロジェクト設定 (`agents-cli-manifest.yaml`)
 
@@ -45,7 +74,7 @@ staging_bucket: gs://qwiklabs-gcp-03-4f265f3b8af7-agent-staging
 
 ---
 
-## 3. 🧪 ラボ操作ハーネス設計 & 実装 (Harness Design & Implementation)
+## 4. 🧪 ラボ操作ハーネス設計 & 実装 (Harness Design & Implementation)
 
 ラボ操作ハーネスは、ブラウザ UI、ローカル開発環境、GCP サーバーレスインフラ、および自動録画パイプラインを以下の 5 つの専門層を通じて接続・運用しています。
 
@@ -63,7 +92,7 @@ staging_bucket: gs://qwiklabs-gcp-03-4f265f3b8af7-agent-staging
 ```
 
 ### 1. CLI & 評価ハーネス (CLI & Evaluation Harness)
-- **`google-agents-cli` (`agents-cli`)**: ローカル Playground サーバー、単体/結合テスト実行環境 (`uv run pytest`)、および評価データセット合成・自動採点 (`agents-cli eval`) を一約制御。
+- **`google-agents-cli` (`agents-cli`)**: ローカル Playground サーバー、単体/結合テスト実行環境 (`uv run pytest`)、および評価データセット合成・自動採点 (`agents-cli eval`) を一括制御。
 
 ### 2. A2A ゲートウェイ & FastAPI プロキシハーネス (`frontend/main.py`)
 - ブラウザからの REST 呼び出しを **A2A プロトコル** (`StreamQuery` / `GenerateStreamResponse`) に変換。
@@ -84,7 +113,7 @@ staging_bucket: gs://qwiklabs-gcp-03-4f265f3b8af7-agent-staging
 
 ---
 
-## 4. 📦 復元可能な実データセット
+## 5. 📦 復元可能な実データセット
 
 ### 1. Firestore タスク初期データセット (`docs/seed_data/firestore_tasks.json`)
 データベース参照時にエージェントが利用する IT ワークアウトタスクの初期状態を格納。

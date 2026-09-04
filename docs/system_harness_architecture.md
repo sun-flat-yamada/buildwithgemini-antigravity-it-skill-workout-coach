@@ -1,10 +1,39 @@
 # 🏛️ System Prompt, Harness Design, & Setup Architecture Guide
 
-This document provides a comprehensive technical breakdown of the system prompt, environment setup, lab operations harness design, and reproducible real datasets for the **IT Skill Workout Coach** agent application.
+This document provides a comprehensive technical breakdown of the system prompts, environment setup, lab operations harness design, VM initialization, and reproducible real datasets for the **IT Skill Workout Coach** agent application.
 
 ---
 
-## 1. 🤖 System Prompt & Instruction Architecture
+## 1. ⚙️ Antigravity Lab Configuration, Setup & Prompt Overview
+
+### 1. Authentication & Environment Configuration Files
+
+- **`lab.env`** (`/config/automata/lab.env`): Contains Qwiklabs participant credentials (`AG_EMAIL`, `AG_PASSWORD`) and GCP Project ID (`AG_PROJECT_ID`).
+- **App `.env`** (`/config/Desktop/BuildWithGemini/antigravity-it-skill-workout-coach/.env`): Vertex AI and GCP project settings:
+  ```env
+  GOOGLE_GENAI_USE_VERTEXAI=true
+  GOOGLE_CLOUD_PROJECT=qwiklabs-gcp-03-4f265f3b8af7
+  GOOGLE_CLOUD_LOCATION=global
+  MEMORY_BANK_ID=7139003105068187648
+  ```
+
+### 2. System Prompts & Requirement Specifications
+
+- **`agent.py (instruction)`**: System instruction for the IT Skill Workout Coach persona and A2UI card formatting directives.
+- **`project_brief.md`** (`/config/Desktop/BuildWithGemini/project_brief.md`): Requirement specification detailing core rails (memory, tools, eval, deploy, frontend) and stretch features (A2UI catalog/tables, image gen badges/diagrams, code sandbox progress graphs).
+- **`GEMINI.md`** (`/config/Desktop/BuildWithGemini/antigravity-it-skill-workout-coach/GEMINI.md`): AI agent coding guide specifying prerequisites, 6-phase development workflow, CLI commands, and operational constraints (e.g., code preservation, model retention).
+- **`SKILL.md (troubleshoot-lab-setup)`** (`/config/Desktop/BuildWithGemini/.agents/skills/troubleshoot-lab-setup/SKILL.md`): Diagnostic prompt verifying GCP login state, IAM permissions (`roles/aiplatform.user`), enabled APIs, and environment readiness.
+
+### 3. Automation Scripts, Interceptors, & Marker Flags
+
+- **`automata/bin/`**:
+  - `ag_autologin.py`: Automated login script orchestrating GCP and Antigravity CLI sign-in.
+  - Browser interceptors (`xdg-open`, `shim`): Intercepts browser launch calls within the remote desktop environment.
+- **`.antigravity-lab-setup-complete`** (`/config/.antigravity-lab-setup-complete`): Marker flag file indicating that the lab environment initialization has successfully completed.
+
+---
+
+## 2. 🤖 Agent System Prompt Architecture
 
 The agent's personality, execution constraints, and UI output formats are controlled via layered system prompts defined in [`app/agent.py`](../app/agent.py).
 
@@ -26,7 +55,7 @@ Available Tools:
 
 ---
 
-## 2. ⚙️ Environment Setup & Infrastructure Configuration
+## 3. ⚙️ Infrastructure & IAM Configuration
 
 ### Project Configuration (`agents-cli-manifest.yaml`)
 
@@ -45,7 +74,7 @@ staging_bucket: gs://qwiklabs-gcp-03-4f265f3b8af7-agent-staging
 
 ---
 
-## 3. 🧪 Lab Operations Harness Design & Implementation
+## 4. 🧪 Lab Operations Harness Design & Implementation
 
 The lab operations harness connects the browser UI, local development environment, GCP serverless infrastructure, and recording pipelines through 5 specialized layers:
 
@@ -84,7 +113,7 @@ The lab operations harness connects the browser UI, local development environmen
 
 ---
 
-## 4. 📦 Reproducible Real Datasets
+## 5. 📦 Reproducible Real Datasets
 
 ### 1. Firestore Tasks Seed Dataset (`docs/seed_data/firestore_tasks.json`)
 Contains the initial state of IT workout tasks used by the agent during database lookups.
